@@ -170,7 +170,10 @@ module WashOut
       controller.send :helper, :wash_out
       controller.send :"before_#{entity}", :_authenticate_wsse,   :if => :soap_action?
       controller.send :"before_#{entity}", :_map_soap_parameters, :if => :soap_action?
-      controller.send :"skip_before_#{entity}", :verify_authenticity_token
+
+      if controller.send(:_process_action_callbacks).select { |c| c.kind == :before }.map(&:filter).include?('verify_authenticity_token')
+        controller.send :"skip_before_#{entity}", :verify_authenticity_token
+      end
     end
 
     def self.deep_select(collection, result=[], &blk)

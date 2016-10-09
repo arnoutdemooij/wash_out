@@ -37,11 +37,11 @@ module WashOut
 
     def _strip_empty_nodes(params, hash)
       hash.keys.each do |key|
-        param = params.detect { |a| a.raw_name.to_s == key.to_s }
+        param = params.detect { |a| a.raw_name.underscore.to_s == key.to_s.underscore }
         next if !(param && hash[key].is_a?(Hash))
 
         value = hash[key].delete_if do |k, _|
-          k.to_s[0] == '@' && !param.map.detect { |a| a.raw_name.to_s == k.to_s }
+          k.to_s[0] == '@' && !param.map.detect { |a| a.raw_name.underscore.to_s == k.to_s.underscore }
         end
 
         if value.length > 0

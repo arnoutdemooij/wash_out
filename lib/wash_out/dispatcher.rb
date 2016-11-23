@@ -37,11 +37,11 @@ module WashOut
 
     def _strip_empty_nodes(params, hash)
       hash.keys.each do |key|
-        param = params.detect { |a| a.raw_name.underscore.to_s == key.to_s.underscore }
+        param = params.detect { |a| a.raw_name.to_s == key.to_s }
         next if !(param && hash[key].is_a?(Hash))
 
         value = hash[key].delete_if do |k, _|
-          k.to_s[0] == '@' && !param.map.detect { |a| a.raw_name.underscore.to_s == k.to_s.underscore }
+          k.to_s[0] == '@' && !param.map.detect { |a| a.raw_name.to_s == k.to_s }
         end
 
         if value.length > 0
@@ -170,10 +170,7 @@ module WashOut
       controller.send :helper, :wash_out
       controller.send :"before_#{entity}", :_authenticate_wsse,   :if => :soap_action?
       controller.send :"before_#{entity}", :_map_soap_parameters, :if => :soap_action?
-
-      if controller.send(:_process_action_callbacks).select { |c| c.kind == :before }.map(&:filter).include?('verify_authenticity_token')
-        controller.send :"skip_before_#{entity}", :verify_authenticity_token
-      end
+      controller.send :"skip_before_#{entity}", :verify_authenticity_token
     end
 
     def self.deep_select(collection, result=[], &blk)
